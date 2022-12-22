@@ -29,7 +29,21 @@ const updateUI = async () => {
 	signOutButton.disabled = !isAuthenticated;
 };
 
+// Görs när sidan laddas
 updateUI()
+
+const query = window.location.search
+// String.includes(x)
+if (query.includes('code=') && query.includes('state=') ) {
+	// Processa login state
+	await auth0Client.handleRedirectCallback()
+	updateUI()
+
+	// Ta bort koderna från adressfältet
+	window.history.replaceState({}, document.title, '/')
+}
+
+
 
 // Funktioner för att logga in och ut
 const login = async () => {
@@ -42,9 +56,14 @@ const login = async () => {
 };
 
 const logout = async () => {
-	await auth0Client.logout();
+	await auth0Client.logout({
+		logoutParams: {
+			returnTo: window.location.origin
+		}
+	});
 	updateUI()
 }
 
 signInButton.addEventListener('click', login)
 signOutButton.addEventListener('click', logout)
+
