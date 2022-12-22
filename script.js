@@ -17,19 +17,34 @@ const configureClient = async () => {
 await configureClient();
 
 
+// DOM elements
+const signInButton = document.querySelector('#sign-in')
+const signOutButton = document.querySelector('#sign-out')
+
+
 const updateUI = async () => {
 	const isAuthenticated = await auth0Client.isAuthenticated();
 
-	document.getElementById("sign-in").disabled = isAuthenticated;
-	document.getElementById("sign-out").disabled = !isAuthenticated;
+	signInButton.disabled = isAuthenticated;
+	signOutButton.disabled = !isAuthenticated;
 };
 
 updateUI()
 
+// Funktioner för att logga in och ut
 const login = async () => {
 	await auth0Client.loginWithRedirect({
 		authorizationParams: {
 			redirect_uri: window.location.origin
 		}
 	});
+	updateUI()
 };
+
+const logout = async () => {
+	await auth0Client.logout();
+	updateUI()
+}
+
+signInButton.addEventListener('click', login)
+signOutButton.addEventListener('click', logout)
