@@ -20,14 +20,26 @@ await configureClient();
 // DOM elements
 const signInButton = document.querySelector('#sign-in')
 const signOutButton = document.querySelector('#sign-out')
+const results = document.querySelector('#results')
 
-
+// Kör denna för att uppdatera DOM, så fort autentiseringsstatus ändras
 const updateUI = async () => {
 	const isAuthenticated = await auth0Client.isAuthenticated();
 
 	signInButton.disabled = isAuthenticated;
 	signOutButton.disabled = !isAuthenticated;
+
+	if( isAuthenticated ) {
+		const profile = await auth0Client.getUser()
+		console.log('User profile:', profile)
+		// email, name, picture
+		// Extra övning: skriv kod som garanterar att name/email/picture inte innehåller någon HTML
+		results.innerHTML = `Welcome ${profile.name}! <br/> <br/> Email: ${profile.email} <br/> Image URL: ${profile.picture} `
+	} else {
+		results.innerHTML = `Welcome guest! <br/> <br/> Please login. `
+	}
 };
+
 
 // Görs när sidan laddas
 updateUI()
@@ -67,3 +79,8 @@ const logout = async () => {
 signInButton.addEventListener('click', login)
 signOutButton.addEventListener('click', logout)
 
+// Strängar i JavaScript:
+// ' '  <- det normala, apostrofer (enkelfnutt / apostrophe)
+// " "  <- vanligare i HTML och JSON, citattecken (dubbelfnutt / quote)
+// ` `  <- template string, grav accent (backtick)
+// ` Variabler inuti sträng: ${x} `
